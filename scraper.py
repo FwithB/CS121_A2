@@ -25,13 +25,10 @@ def extract_next_links(url, resp):
     #print(content)
     base_url = urljoin(url, content.base.get('href')) if content.base else url
     for link in content.find_all('a'):
-        #print(type(link))
-        href = link['href']
-        #print(href)
+        href = link.get('href')
         if href is not None:
             real_link = urljoin(base_url,href)
             links_list.append(real_link)
-    print(links_list)
     return links_list
 
 def is_valid(url):
