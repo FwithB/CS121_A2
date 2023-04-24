@@ -2,12 +2,11 @@ import re
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 
-
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
-def extract_next_links(url, resp) -> list:
+def extract_next_links(url, resp):
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -35,8 +34,20 @@ def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
+    allowed_domains = [
+        "ics.uci.edu",
+        "cs.uci.edu",
+        "informatics.uci.edu",
+        "stat.uci.edu",
+    ]
+
     try:
         parsed = urlparse(url)
+        domain = parsed.netloc
+
+        for allowed_domain in allowed_domains:
+            if domain.endswith(allowed_domain):
+                return True
         if parsed.scheme not in set(["http", "https"]):
             return False
         return not re.match(
