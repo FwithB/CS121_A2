@@ -1,5 +1,6 @@
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
+from bs4 import BeautifulSoup
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -15,16 +16,59 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    return list()
+    links_list = []
+    # check connecting status
+    if resp.status != 200:
+        return links_list
+    # Use beautiful soup to analyze the content of webpages
+    content = BeautifulSoup(resp.raw_response.content, 'html.parser')
+    #print(content)
+    base_url = urljoin(url, content.base.get('href')) if content.base else url
+    for link in content.find_all('a'):
+        href = link.get('href')
+        if href is not None:
+            real_link = urljoin(base_url,href)
+            links_list.append(real_link)
+    return links_list
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
+    allowed_domains = [
+        "ics.uci.edu",
+        "cs.uci.edu",
+        "informatics.uci.edu",
+        "stat.uci.edu",
+    ]
+
     try:
         parsed = urlparse(url)
+        domain = parsed.netloc
+
+        domain_allowed = False
+        for allowed_domain in allowed_domains:
+            if domain.endswith(allowed_domain):
+                domain_allowed = True
+                break
+
+        if not domain_allowed:
+            return False
+
         if parsed.scheme not in set(["http", "https"]):
             return False
+        
+        if parsed.hostname == None:
+            return False
+        
+        if not parsed.hostname.endswith(('ics.uci.edu', 'cs.uci.edu', 'informatics.uci.edu', 'stat.uci.edu')):
+            return False 
+           
+        if parsed.hostname.endswith(('wics.ics.uci.edu')):
+            if re.search(r'(/events/|/wics-hosts|/letter-of)', parsed.path.lower()):
+                return False
+            
+            
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -38,3 +82,4 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+
