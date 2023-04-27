@@ -16,19 +16,40 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
+    
+    
     links_list = []
     # check connecting status
     if resp.status != 200:
         return links_list
+
+    # Load previously visited URLs from a file
+    prev_urls = set()
+    with open("urls.txt", "r") as f:
+        for line in f:
+            prev_urls.add(line.strip())
+
+    # Write visited URL to 'status.txt'
+    with open('status.txt', 'a') as f:
+        f.write(url.split("#")[0])
+        f.write('\n')
+    f.close()
+
     # Use beautiful soup to analyze the content of webpages
     content = BeautifulSoup(resp.raw_response.content, 'html.parser')
-    #print(content)
     base_url = urljoin(url, content.base.get('href')) if content.base else url
     for link in content.find_all('a'):
         href = link.get('href')
         if href is not None:
-            real_link = urljoin(base_url,href)
-            links_list.append(real_link)
+            real_link = urljoin(base_url, href)
+            # Check if the link is valid and not visited before
+            if is_valid(real_link) and real_link not in prev_urls:
+                links_list.append(real_link)
+                # Add the link to the previously visited URLs and write it to the file
+                prev_urls.add(real_link)
+                with open("urls.txt", "a") as f:
+                    f.write(real_link + "\n")
+
     return links_list
 
 def is_valid(url):
