@@ -1,7 +1,7 @@
 import re
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
-
+import addition
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
@@ -50,6 +50,10 @@ def extract_next_links(url, resp):
                 with open("urls.txt", "a") as f:
                     f.write(real_link + "\n")
 
+                    
+                    
+    addition.mostcommon()
+    addition.longestPage()
     return links_list
 
 def is_valid(url):
