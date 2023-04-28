@@ -29,8 +29,8 @@ def extract_next_links(url, resp):
         for line in f:
             prev_urls.add(line.strip())
 
-    # Write visited URL to 'status.txt'
-    with open('status.txt', 'a') as f:
+    # Write visited URL to 'page_status.txt'
+    with open('page_status.txt', 'a') as f:
         f.write(url.split("#")[0])
         f.write('\n')
     f.close()
