@@ -95,8 +95,53 @@ def mostCommon(text):
   
   
   
+  # for the subdomain
+
+def read_urls(file_path):
+    urls = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            line = line.strip()
+            if line:
+                urls.append(line)
+    return urls
+
+def get_subdomain_counts(urls):
+    subdomains = defaultdict(int)
+    for url in urls:
+        parsed_url = urlparse(url)
+        subdomain = parsed_url.hostname.split('.')[0]
+        full_subdomain = f'https://{subdomain}.ics.uci.edu'
+        subdomains[full_subdomain] += 1
+    return subdomains
+
+def getSubdomains():
+    file_path = 'status.txt'
+    urls = read_urls(file_path)
+    subdomains = get_subdomain_counts(urls)
+
+    sorted_subdomains = dict(sorted(subdomains.items(), key=lambda key: key[0]))
+    sorted_subdomains = dict(sorted(sorted_subdomains.items(), key=lambda item: item[1], reverse=True))
+
+    return sorted_subdomains
   
-  
+
+# for the total page
+
+def count_total_pages(file_path):
+    total_pages = 0
+    with open(file_path, 'r') as file:
+        for line in file:
+            total_pages += 1
+    return total_pages
+
+def get_total_pages():
+    file_path = 'status.txt'
+    total_pages = count_total_pages(file_path)
+    return total_pages
+
+
+
   
   
   
