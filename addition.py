@@ -2,6 +2,7 @@ import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from utils.response import Response
+from collections import defaultdict
 
 #before to dig the data, first prepare the tokenize function
 
@@ -61,7 +62,35 @@ def longestPage(url, text):
   
   
   
-  
+  # the following function deal with the 50 common words
+    
+def read_word_frequencies(file_path):
+    word_frequencies = defaultdict(int)
+    with open(file_path, "r") as file:
+        for line in file:
+            line = line.strip()
+            if line:
+                word, count = re.split(r"[\W_À-ÖØ-öø-ÿ]+", line)
+                word_frequencies[word] = int(count)
+    return word_frequencies
+
+def write_word_frequencies(file_path, word_frequencies):
+    with open(file_path, "w") as file:
+        for word, count in word_frequencies.items():
+            file.write(f"{word} {count}\n")
+
+def mostCommon(text):
+    file_path = "Com_words.txt"
+    words = read_word_frequencies(file_path)
+
+    token_list = word_tk(text)
+    for token in token_list:
+        words[token] += 1
+
+    sorted_words = dict(sorted(words.items(), key=lambda key: key[0], reverse=True))
+    sorted_words = dict(sorted(sorted_words.items(), key=lambda item: item[1], reverse=True))
+
+    write_word_frequencies(file_path, sorted_words)
   
   
   
