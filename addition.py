@@ -116,7 +116,7 @@ def get_subdomain_counts(urls):
     return subdomains
 
 def getSubdomains():
-    file_path = 'status.txt'
+    file_path = 'page_status.txt'
     urls = read_urls(file_path)
     subdomains = get_subdomain_counts(urls)
 
@@ -136,7 +136,7 @@ def count_total_pages(file_path):
     return total_pages
 
 def get_total_pages():
-    file_path = 'status.txt'
+    file_path = 'page_status.txt'
     total_pages = count_total_pages(file_path)
     return total_pages
 
