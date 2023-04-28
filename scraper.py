@@ -1,5 +1,5 @@
 import re
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, urldefrag
 from bs4 import BeautifulSoup
 import addition
 def scraper(url, resp):
@@ -71,7 +71,7 @@ def is_valid(url):
     ]
 
     try:
-        parsed = urlparse(url)
+        parsed = urlparse(urldefrag(url).url)
         domain = parsed.netloc
 
         domain_allowed = False
