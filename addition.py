@@ -141,7 +141,25 @@ def get_total_pages():
     return total_pages
 
 
+def generate_report():
+    total_pages = get_total_pages()
+    longest_url, longest_count = read_longest_page("longest.txt")
+    common_words = read_word_frequencies("Com_words.txt")
+    subdomains = getSubdomains()
 
+    with open('report.txt', 'w') as f:
+        f.write(f"NO.1 Total Unique Pages: {total_pages}\n")
+        f.write(f"NO.2 Longest page: {longest_url}\tWords: {longest_count}\n\n")
+        f.write("NO.3  50 most Common Words:\n")
+        
+        for idx, (word, count) in enumerate(common_words.items(), start=1):
+            if idx > 50:
+                break
+            f.write(f"{word}, {count}\n")
+        
+        f.write("\nNO.4 Unique subdomains\n")
+        for subdomain, count in subdomains.items():
+            f.write(f"{subdomain}, {count}\n")
   
   
   
