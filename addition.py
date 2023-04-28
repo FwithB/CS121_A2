@@ -79,7 +79,7 @@ def write_word_frequencies(file_path, word_frequencies):
         for word, count in word_frequencies.items():
             file.write(f"{word} {count}\n")
 
-def mostCommon(text):
+def mostcommon(text):
     file_path = "Com_words.txt"
     words = read_word_frequencies(file_path)
 
