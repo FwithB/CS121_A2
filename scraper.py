@@ -31,7 +31,7 @@ def extract_next_links(url, resp):
 
     # Write visited URL to 'page_status.txt'
     with open('page_status.txt', 'a') as f:
-        f.write(url.split("#")[0])
+        f.write(urldefrag(url).url)
         f.write('\n')
     f.close()
 
