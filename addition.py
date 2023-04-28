@@ -115,7 +115,7 @@ def get_subdomain_counts(urls):
         subdomains[full_subdomain] += 1
     return subdomains
 
-def getSubdomains():
+def Subdomains():
     file_path = 'page_status.txt'
     urls = read_urls(file_path)
     subdomains = get_subdomain_counts(urls)
@@ -145,7 +145,7 @@ def generate_report():
     total_pages = get_total_pages()
     longest_url, longest_count = read_longest_page("longest.txt")
     common_words = read_word_frequencies("Com_words.txt")
-    subdomains = getSubdomains()
+    subdomains = Subdomains()
 
     with open('report.txt', 'w') as f:
         f.write(f"NO.1 Total Unique Pages: {total_pages}\n")
