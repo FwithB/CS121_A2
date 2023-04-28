@@ -50,10 +50,13 @@ def extract_next_links(url, resp):
                 with open("urls.txt", "a") as f:
                     f.write(real_link + "\n")
 
-                    
-                    
-    addition.mostcommon()
-    addition.longestPage()
+    # Get the text from the soup object
+    text = content.getText()
+
+    # Pass the text to mostcommon() and longestPage() functions
+    addition.mostcommon(text)
+    addition.longestPage(resp.raw_response.url, text)
+    
     return links_list
 
 def is_valid(url):
