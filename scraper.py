@@ -1,6 +1,10 @@
 import re
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urlunparse, urljoin, urldefrag
 from bs4 import BeautifulSoup
+import addition
+
+prev_urls = set()
+visited_pages = set()
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -16,19 +20,53 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
+    parsed = urlparse(url)
+    clean_url = urlunparse((parsed.scheme, parsed.netloc, parsed.path, '', '', ''))
+    parsed_url = urlparse(clean_url)
     links_list = []
     # check connecting status
     if resp.status != 200:
         return links_list
+
+    # Load previously visited URLs from a file
+    # prev_urls = set()
+    # with open("urls.txt", "r") as f:
+    #     for line in f:
+    #         prev_urls.add(line.strip())
+    # f.close()
+
+    # Write visited URL to 'page_status.txt'
+    with open('page_status.txt', 'a') as f:
+        if parsed_url not in visited_pages:
+            f.write(clean_url)
+            f.write('\n')
+            visited_pages.add(parsed_url)
+    f.close()
+
     # Use beautiful soup to analyze the content of webpages
     content = BeautifulSoup(resp.raw_response.content, 'html.parser')
-    #print(content)
-    base_url = urljoin(url, content.base.get('href')) if content.base else url
+    base_url = urljoin(clean_url, content.base.get('href')) if content.base else clean_url
     for link in content.find_all('a'):
         href = link.get('href')
         if href is not None:
-            real_link = urljoin(base_url,href)
-            links_list.append(real_link)
+            real_link = urlparse(urljoin(base_url, href))
+            real_link = urlunparse((real_link.scheme, real_link.netloc, real_link.path, '', '', ''))
+            # Check if the link is valid and not visited before
+            if is_valid(real_link) and real_link not in prev_urls:
+                links_list.append(real_link)
+                # Add the link to the previously visited URLs and write it to the file
+                prev_urls.add(real_link)
+                with open("urls.txt", "a") as f:
+                    print(real_link)
+                    f.write(real_link + "\n")
+
+    # Get the text from the soup object
+    text = content.getText()
+
+    # Pass the text to mostcommon() and longestPage() functions
+    addition.mostcommon(text)
+    addition.longestPage(resp.raw_response.url, text)
+    
     return links_list
 
 def is_valid(url):
@@ -43,14 +81,48 @@ def is_valid(url):
     ]
 
     try:
-        parsed = urlparse(url)
+        parsed_url = urlparse(url)
+        clean_url = urlunparse((parsed_url.scheme, parsed_url.netloc, parsed_url.path, '', '', ''))
+        parsed = urlparse(clean_url)
         domain = parsed.netloc
 
+        domain_allowed = False
         for allowed_domain in allowed_domains:
             if domain.endswith(allowed_domain):
-                return True
+                domain_allowed = True
+                break
+
+        if not domain_allowed:
+            return False
+
+        if parsed.path.endswith((".mpg", ".ppsx", "nb", ".img")):
+            return False
+
         if parsed.scheme not in set(["http", "https"]):
             return False
+        
+        if parsed.hostname == None:
+            return False
+        
+        if not parsed.hostname.endswith(('ics.uci.edu', 'cs.uci.edu', 'informatics.uci.edu', 'stat.uci.edu')):
+            return False 
+           
+        if parsed.hostname.endswith(('wics.ics.uci.edu')):
+            if re.search(r'(/events/|/wics-hosts|/letter-of)', parsed.path.lower()):
+                return False
+            
+        if re.search( 
+            r'(/css/|/js/|/bmp/|/gif/|/jpe?g/|/ico/'
+            + r'|/png/|/tiff?/|/mid/|/mp2/|/mp3/|/mp4/'
+            + r'|/wav/|/avi/|/mov/|/mpeg/|/ram/|/m4v/|/mkv/|/ogg/|/ogv/|pdf'
+            + r'|/ps/|/eps/|/tex/|/ppt/|/pptx/|/ppsx/|/doc/|/docx/|/xls/|/xlsx/|/names/|/wp-'
+            + r'|/data/|/dat/|/exe/|/bz2/|/tar/|/msi/|/bin/|/7z/|/psd/|/dmg/|/iso/'
+            + r'|/epub/|/dll/|/cnf/|/tgz/|/sha1/'
+            + r'|/thmx/|/mso/|/arff/|/rtf/|/jar/|/csv/'
+            + r'|/rm/|/smil/|/wmv/|/swf/|/wma/|/zip/|/rar/|/gz/)', parsed.path.lower()):
+            return False
+        
+                    
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -64,3 +136,4 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+
