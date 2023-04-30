@@ -76,6 +76,14 @@ def extract_next_links(url, resp):
         pass
     return links_list
 
+def pattern_recognition(parsed_url):
+    path = parsed_url.path
+    path_segments = path.split('/')
+    for i, segment in enumerate(path_segments[:-1]):
+        if segment in path_segments[i + 1:]:
+            return True
+    return False
+
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
@@ -100,6 +108,9 @@ def is_valid(url):
                 break
 
         if not domain_allowed:
+            return False
+
+        if pattern_recognition(parsed):
             return False
 
         if parsed.path.endswith((".mpg", ".ppsx", "nb", ".img")):
