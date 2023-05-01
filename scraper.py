@@ -40,7 +40,7 @@ def extract_next_links(url, resp):
     
     hash_value = sh.process_hash(text,3)
     for v in hash_value_set:
-        if sh.compare(hash_value,v,0.8):
+        if sh.compare(hash_value,v,0.9):
             print('PASS')
             return links_list
         else:
@@ -87,13 +87,6 @@ def extract_next_links(url, resp):
     
     return links_list
 
-def pattern_recognition(parsed_url):
-    path = parsed_url.path
-    path_segments = path.split('/')
-    for i, segment in enumerate(path_segments[:-1]):
-        if segment in path_segments[i + 1:]:
-            return True
-    return False
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
@@ -121,9 +114,6 @@ def is_valid(url):
         if not domain_allowed:
             return False
 
-        if pattern_recognition(parsed):
-            return False
-
         if parsed.path.endswith((".mpg", ".ppsx", "nb", ".img")):
             return False
 
@@ -141,9 +131,9 @@ def is_valid(url):
                 return False
             
         if re.search( 
-            r'(/css/|/js/|/bmp/|/gif/|/jpe?g/|/ico/|/events/|/events|/event|/event/|/wics-hosts|/Nanda/|/Nanda|/seminar|/seminar/'
-            + r'|/png/|/tiff?/|/mid/|/mp2/|/mp3/|/mp4/|/index.php/|/stayconnected/|/calendar/|/calendar|/letter-of|/computing|/computing/'
-            + r'|/wav/|/avi/|/mov/|/mpeg/|/ram/|/m4v/|/mkv/|/ogg/|/ogv/|pdf|/policies/'
+            r'(/css/|/js/|/bmp/|/gif/|/jpe?g/|/ico/|/events/|/events|/event|/event/|/wics-hosts'
+            + r'|/png/|/tiff?/|/mid/|/mp2/|/mp3/|/mp4/|/calendar/|/calendar|/letter-of'
+            + r'|/wav/|/avi/|/mov/|/mpeg/|/ram/|/m4v/|/mkv/|/ogg/|/ogv/|pdf'
             + r'|/ps/|/eps/|/tex/|/ppt/|/pptx/|/ppsx/|/doc/|/docx/|/xls/|/xlsx/|/names/|/wp-'
             + r'|/data/|/dat/|/exe/|/bz2/|/tar/|/msi/|/bin/|/7z/|/psd/|/dmg/|/iso/'
             + r'|/epub/|/dll/|/cnf/|/tgz/|/sha1/'
@@ -154,7 +144,7 @@ def is_valid(url):
                     
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico|htm|war"
-            + r"|png|tiff?|mid|mp2|mp3|mp4"
+            + r"|png|tiff?|mid|mp2|mp3|mp4|odc"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
             + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
