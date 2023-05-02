@@ -152,8 +152,12 @@ def generate_report():
         f.write(f"NO.2 Longest page: {longest_url}\tWords: {longest_count}\n\n")
         f.write("NO.3  50 most Common Words:\n")
         
+        threshold = 50
         for idx, (word, count) in enumerate(common_words.items(), start=1):
-            if idx > 50:
+            if len(word) <= 1:
+                threshold += 1
+                continue
+            if idx > threshold:
                 break
             f.write(f"{word}, {count}\n")
         
