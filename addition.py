@@ -110,9 +110,9 @@ def get_subdomain_counts(urls):
     subdomains = defaultdict(int)
     for url in urls:
         parsed_url = urlparse(url)
-        subdomain = parsed_url.hostname.split('.')[0]
-        full_subdomain = f'https://{subdomain}.ics.uci.edu'
-        subdomains[full_subdomain] += 1
+        subdomain = parsed_url.hostname.split('.')
+        #full_subdomain = f'https://{subdomain}.ics.uci.edu'
+        subdomains[subdomain] += 1
     return subdomains
 
 def getSub():
