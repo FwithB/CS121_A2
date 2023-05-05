@@ -59,6 +59,12 @@ def extract_next_links(url, resp):
     
     return links_list
 
+
+#checks if a given URL is suitable for crawling. 
+#It verifies if the URL belongs to allowed domains, uses "http" or "https" schemes, and ensures the hostname is valid.
+#The function also checks for specific conditions in the "wics.ics.uci.edu" subdomain and filters out undesired file types. 
+#If the URL meets all the requirements, it returns True, allowing the URL to be crawled.
+
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
