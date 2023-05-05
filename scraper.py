@@ -69,6 +69,8 @@ def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
+    
+    # Create a list of valid domain for later domain check. 
     allowed_domains = [
         "ics.uci.edu",
         "cs.uci.edu",
@@ -77,21 +79,27 @@ def is_valid(url):
     ]
 
     try:
+        # Use the parsed URL that has been defragmented. 
         parsed = urlparse(urldefrag(url).url)
+        # Get the domain of the parsed URL. 
         domain = parsed.netloc
 
+        # Check if the domain is valid
         domain_allowed = False
         for allowed_domain in allowed_domains:
             if domain.endswith(allowed_domain):
                 domain_allowed = True
                 break
 
+        # If the domain is not valid, return False.
         if not domain_allowed:
             return False
 
+        # Check if the scheme is valid
         if parsed.scheme not in set(["http", "https"]):
             return False
         
+        # Check if the URL has a host name. 
         if parsed.hostname == None:
             return False
         
