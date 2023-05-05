@@ -103,13 +103,16 @@ def is_valid(url):
         if parsed.hostname == None:
             return False
         
+        # Hostname check. 
         if not parsed.hostname.endswith(('ics.uci.edu', 'cs.uci.edu', 'informatics.uci.edu', 'stat.uci.edu')):
             return False 
-           
+        
+        # Return False for specific traps. 
         if parsed.hostname.endswith(('wics.ics.uci.edu')):
             if re.search(r'(/events/|/wics-hosts|/letter-of)', parsed.path.lower()):
                 return False
             
+        # Exclude the follow types to make sure only documents are crawled. 
         if re.search( 
             r'(/css/|/js/|/bmp/|/gif/|/jpe?g/|/ico/'
             + r'|/png/|/tiff?/|/mid/|/mp2/|/mp3/|/mp4/'
